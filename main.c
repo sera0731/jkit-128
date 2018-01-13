@@ -9,13 +9,13 @@
 #define MOTOR_STOP1	0x00
 #define MOTOR_STOP2	0x11
 
-volatile int count = 0;	// Àü¿ªº¯¼ö(Global Variable)
+volatile int count = 0;	// ì „ì—­ë³€ìˆ˜(Global Variable)
 
 //FND
 unsigned char digit[10] = {0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, 0x7f, 0x6f};
 unsigned char fnd_sel[4] = {0x01, 0x02, 0x04, 0x08}; 
 
-// sec¸¸Å­ µô·¹ÀÌ
+// secë§Œí¼ ë”œë ˆì´
 void delay_sec(float sec)
 {
     int i;
@@ -24,32 +24,32 @@ void delay_sec(float sec)
 }
 
 
-// count Áõ°¡
+// count ì¦ê°€
 SIGNAL(SIG_INTERRUPT4)
 {	
    	count++;
 	_delay_ms(10);
 }
 
-// ¸ğÅÍ µ¿ÀÛ ¹× count ÃÊ±âÈ­
+// ëª¨í„° ë™ì‘ ë° count ì´ˆê¸°í™”
 SIGNAL(SIG_INTERRUPT5)
 {	
 	int i, length;
 
-	// ¸ğÅÍ ½ÃÀÛ
+	// ëª¨í„° ì‹œì‘
 	PORTB = MOTOR_CW;
 
-	// ¸ğÅÍ¸¦ countÃÊ¸¸Å­ µ¿ÀÛ
+	// ëª¨í„°ë¥¼ countì´ˆë§Œí¼ ë™ì‘
 	length = count*1000/4;
 
 	for (i = 0; i < length; i++) {
 		display_char();
 	}
 
-	// ¸ğÅÍ Á¤Áö
+	// ëª¨í„° ì •ì§€
 	PORTB = MOTOR_STOP1;
 	
-	// ±â¾î¸ğÅÍ Á¦¾î 
+	// ê¸°ì–´ëª¨í„° ì œì–´ 
 	PORTF = 0x01;
 	delay_sec(0.5);
 	PORTF = 0xfe;
@@ -59,7 +59,7 @@ SIGNAL(SIG_INTERRUPT5)
 	count=0;
 
 }
-//count °¨¼Ò
+//count ê°ì†Œ
 SIGNAL(SIG_INTERRUPT6)
 {	
 	if(count<0){
@@ -69,14 +69,14 @@ SIGNAL(SIG_INTERRUPT6)
    	count--;
 	_delay_ms(10);
 }
-//count ÃÊ±âÈ­
+//count ì´ˆê¸°í™”
 SIGNAL(SIG_INTERRUPT7)
 {	
    	count=0;
 	_delay_ms(10);
 }
 
-// ^__^ Ç¥Á¤ Ãâ·Â
+// ^__^ í‘œì • ì¶œë ¥
 void display_char()
 {
 	int i,fnd[4];
@@ -94,15 +94,15 @@ void display_char()
 	}
 }
 
-// ¼ıÀÚ Ãâ·Â
+// ìˆ«ì ì¶œë ¥
 void display_fnd(int count)
 {	
 	int i, fnd[4];
 		
-	fnd[3] = (count/1000)%10;	// ÃµÀÇ ÀÚ¸®
-	fnd[2] = (count/100)%10;	// ¹éÀÇ ÀÚ¸®
-	fnd[1] = (count/10)%10;		// ½ÊÀÇ ÀÚ¸®
-	fnd[0] = count%10;	// ÀÏÀÇ ÀÚ¸®
+	fnd[3] = (count/1000)%10;	// ì²œì˜ ìë¦¬
+	fnd[2] = (count/100)%10;	// ë°±ì˜ ìë¦¬
+	fnd[1] = (count/10)%10;		// ì‹­ì˜ ìë¦¬
+	fnd[0] = count%10;	// ì¼ì˜ ìë¦¬
 
 	for (i=0; i<4; i++)
 	{
@@ -112,18 +112,18 @@ void display_fnd(int count)
 	}
 }
 
-//Æ÷Æ®ÀÇ ÀÔÃâ·ÂÀ» ÃÊ±âÈ­
+//í¬íŠ¸ì˜ ì…ì¶œë ¥ì„ ì´ˆê¸°í™”
 void init_module(){
 
-	// ±â¾î¸ğÅÍ È®Àå ¸ğµâ ½ÅÈ£
+	// ê¸°ì–´ëª¨í„° í™•ì¥ ëª¨ë“ˆ ì‹ í˜¸
  	DDRF = 0x00;
-	// C Æ÷Æ®´Â FND µ¥ÀÌÅÍ ½ÅÈ£
+	// C í¬íŠ¸ëŠ” FND ë°ì´í„° ì‹ í˜¸
 	DDRC = 0xff;	
-	// G Æ÷Æ®´Â FND ¼±ÅÃ ½ÅÈ£
+	// G í¬íŠ¸ëŠ” FND ì„ íƒ ì‹ í˜¸
 	DDRG = 0x0f;
-	// EÆ÷Æ® (½ºÀ§Ä¡)¸¦ 0000 1111 ÀÔ·ÂÀ¸·Î ¼³Á¤
+	// Eí¬íŠ¸ (ìŠ¤ìœ„ì¹˜)ë¥¼ 0000 1111 ì…ë ¥ìœ¼ë¡œ ì„¤ì •
 	DDRE = 0xff;
-	// ¸ğÅÍÀÇ Æ÷Æ®¹øÈ£ PB7-6¸¦ Ãâ·ÂÀ¸·Î ¼³Á¤
+	// ëª¨í„°ì˜ í¬íŠ¸ë²ˆí˜¸ PB7-6ë¥¼ ì¶œë ¥ìœ¼ë¡œ ì„¤ì •
 	DDRB = 0xf0;
 
 }
@@ -131,23 +131,23 @@ void init_module(){
 void set_interrupt(){
 
 	//External Interrupt Mask Register
-	//INT 7~0 Bit¸¦ set(1) ½ÃÅ°¸é ÇØ´ç ¿ÜºÎ interrupt PINÀÌ È°¼ºÈ­µÊ. 
+	//INT 7~0 Bitë¥¼ set(1) ì‹œí‚¤ë©´ í•´ë‹¹ ì™¸ë¶€ interrupt PINì´ í™œì„±í™”ë¨. 
 
 	// INT4~7 interrupt enable
 	EIMSK = 0xff;
 
 	//External Interrupt Control Register A/B
 
-	// INT0~3 = »ó½Â¿§Áö »ç¿ë	
+	// INT0~3 = ìƒìŠ¹ì—£ì§€ ì‚¬ìš©	
 	EICRA = 0xff;
-	// INT4~7 = »ó½Â¿§Áö »ç¿ë
+	// INT4~7 = ìƒìŠ¹ì—£ì§€ ì‚¬ìš©
 	EICRB = 0xff;
 
 	//Status Register 
 	//bit 7 = I (Interrupt Enable)
 	//SREG |= 1<<7;
 
-	// ÀÎÅÍ·´Æ® »ç¿ë
+	// ì¸í„°ëŸ½íŠ¸ ì‚¬ìš©
 	sei();
 
 }
